@@ -2,10 +2,9 @@ from io import StringIO
 
 import pandas as pd
 import requests
-from config import FIRMS_MAP_KEY, KALTENG_KALSEL_BBOX
 
-FIRMS_SOURCE = "VIIRS_SNPP_NRT"
-DAYS_RANGE = 1
+from config import DAYS_RANGE, FIRMS_MAP_KEY, FIRMS_SOURCE, KALTENG_KALSEL_BBOX
+
 
 def fetch_hotspot() -> pd.DataFrame:
     area = ",".join(map(str, KALTENG_KALSEL_BBOX))
