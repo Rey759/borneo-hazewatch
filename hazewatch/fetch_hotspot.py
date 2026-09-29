@@ -2,7 +2,8 @@ from io import StringIO
 
 import pandas as pd
 import requests
-from config import (
+
+from hazewatch.config import (
     DAYS_RANGE,
     FIRMS_MAP_KEY,
     FIRMS_SOURCE,
