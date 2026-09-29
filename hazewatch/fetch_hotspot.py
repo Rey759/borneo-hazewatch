@@ -2,8 +2,12 @@ from io import StringIO
 
 import pandas as pd
 import requests
-
-from config import DAYS_RANGE, FIRMS_MAP_KEY, FIRMS_SOURCE, KALTENG_KALSEL_BBOX
+from config import (
+    DAYS_RANGE,
+    FIRMS_MAP_KEY,
+    FIRMS_SOURCE,
+    KALTENG_KALSEL_BBOX,
+)
 
 
 def fetch_hotspot() -> pd.DataFrame:
@@ -13,8 +17,8 @@ def fetch_hotspot() -> pd.DataFrame:
     response.raise_for_status()
     return pd.read_csv(StringIO(response.text))
 
+
 if __name__ == "__main__":
     df = fetch_hotspot()
     print(len(df))
     print(df.head())
-    
