@@ -1,5 +1,5 @@
 from hazewatch.fetch_hotspot import fetch_hotspot
-from hazewatch.process import process_hotspot
+from hazewatch.process import compute_metrics, process_hotspot
 
 if __name__ == "__main__":
     print("1. Mengambil data hotspot dari NASA FIRMS")
@@ -10,5 +10,10 @@ if __name__ == "__main__":
     df = process_hotspot(df)
     print(f"3. Data setelah diproses: {len(df)} hotspot")
     
-    print("\nPreview Data: ")
-    print(df.head())
+    print("\nConfidence: ")
+    print(df["confidence"].value_counts())
+    
+    metrics = compute_metrics(df)
+    
+    print("\nMetrics: ")
+    print(metrics)
