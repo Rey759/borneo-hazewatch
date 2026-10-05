@@ -17,7 +17,10 @@ if __name__ == "__main__":
     print("\nConfidence: ")
     print(df["confidence"].value_counts())
     
-    metrics = compute_metrics(df)
+    yesterday_metrics = load_yesterday_metrics()
+    
+    metrics = compute_metrics(df, yesterday_metrics)
+    
     
     print("\nMetrics: ")
     print(metrics)
@@ -30,8 +33,3 @@ if __name__ == "__main__":
     
     print("\n Metrics yang dibaca kembali: ")
     print(loaded_metrics)
-    
-    yesterday_metrics = load_yesterday_metrics()
-    
-    print("\n Metrics kemarin: ")
-    print(yesterday_metrics)
