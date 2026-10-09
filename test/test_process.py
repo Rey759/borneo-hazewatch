@@ -27,3 +27,22 @@ def test_compute_metrics():
     assert result["top_area"]["count"] == 2
 
     assert result["trend"] is None
+    
+def test_compute_metrics_with_yesterday ():
+    df = pd.DataFrame(
+        { 
+            "latitude": [-2.51, -2.54, -3.10, -3.12],
+            "longitude": [115.31, 115.34, 114.80, 114.82],
+            "confidence": ["h", "n", "h", "l"],
+            "frp": [10.0, 20.0, 30.0, 40.0],
+            
+        }
+    )
+    
+    yesterday = {"total" : 2}
+    
+    result = compute_metrics(df, yesterday)
+    
+    assert result["total"] == 4
+    assert result["trend"] == 2
+    
