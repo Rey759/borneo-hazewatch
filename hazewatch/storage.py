@@ -19,8 +19,10 @@ def save_metrics(metrics: dict, target_date: date | None = None)-> Path:
         
     return file_path
 
-def load_metrics(target_date: date)-> dict | None:
+def load_metrics(target_date: date | None = None)-> dict | None:
     """ Load metrics for a specific date """
+    if target_date is None:
+        target_date = datetime.now(UTC).date()
     
     file_path = DATA_DIR / f"{target_date.isoformat()}.json"
     

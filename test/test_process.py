@@ -1,6 +1,6 @@
 import pandas as pd
 
-from hazewatch.process import compute_metrics
+from hazewatch.process import compute_metrics, process_hotspot
 
 
 def test_compute_metrics():
@@ -46,3 +46,35 @@ def test_compute_metrics_with_yesterday ():
     assert result["total"] == 4
     assert result["trend"] == 2
     
+def test_process_hotspot():
+    df = pd.DataFrame(
+        {
+            "latitude": [-2.51, -2.54, -5.0, None],
+            "longitude": [115.31, 115.34, 115.0, 115.0],
+            "confidence": ["h", "n", "h", "l"],
+            "frp": [10.0, 20.0, 30.0, 40.0],   
+        }
+    )
+    
+    result = process_hotspot(df)
+    
+    assert len(result) == 2
+    assert result["latitude"].between(-3.570070, -1.964000).all()
+    assert result["longitude"].between(110.732674, 115.847221).all()
+    
+def test_process_hotspot_invalid_coordinates():
+    df = pd.DataFrame(
+    
+        {
+            "latitude": [-2.51, "invalid", -5.0, None],
+            "longitude": [115.31, 115.34, 115.0, 115.0],
+            "confidence": ["h", "n", "h", "l"],
+            "frp": [10.0, 20.0, 30.0, 40.0],   
+        }
+    )
+    
+    result = process_hotspot(df)
+    
+    assert len(result) == 1
+    assert result.iloc[0]["latitude"] == -2.51
+    assert result.iloc[0]['longitude'] == 115.31

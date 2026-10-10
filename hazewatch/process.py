@@ -22,6 +22,7 @@ def process_hotspot(df: pd.DataFrame) -> pd.DataFrame:
                 df[column],
                 errors="coerce",
             )
+    df = df.dropna(subset=["latitude", "longitude"])
             
     df = df [
         df["latitude"].between(-3.570070, -1.964000)
