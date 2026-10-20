@@ -78,3 +78,38 @@ def test_process_hotspot_invalid_coordinates():
     assert len(result) == 1
     assert result.iloc[0]["latitude"] == -2.51
     assert result.iloc[0]['longitude'] == 115.31
+    
+def test_compute_metrics_negative_trend():
+    df = pd.DataFrame(
+        {
+            "latitude": [-2.51, -2.54, -3.10, -3.12],
+            "longitude": [115.31, 115.4, 114.80, 114.82],
+            "confidence": ["h", "n", "h", "l"],
+            "frp": [10.0, 20.0, 30.0, 40.0],
+        }
+    )
+    
+    yesterday = {"total": 10}
+    
+    result = compute_metrics(df, yesterday)
+    
+    assert result["total"] == 4
+    assert result["trend"] == -6
+
+
+def test_compute_metrics_yesterday_without_total():
+    df = pd.DataFrame(
+        {
+            "latitude": [-2.51, -2.54, -3.10, -3.12],
+            "longitude": [115.31, 115.4, 114.80, 114.82],
+            "confidence": ["h", "n", "h", "l"],
+            "frp": [10.0, 20.0, 30.0, 40.0],
+        }
+    )
+    
+    yesterday = {}
+    
+    result = compute_metrics(df, yesterday)
+    
+    assert result["total"] == 4
+    assert result["trend"] == -6
