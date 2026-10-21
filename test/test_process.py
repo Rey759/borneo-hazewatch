@@ -112,4 +112,4 @@ def test_compute_metrics_yesterday_without_total():
     result = compute_metrics(df, yesterday)
     
     assert result["total"] == 4
-    assert result["trend"] == -6
+    assert result["trend"] is None
