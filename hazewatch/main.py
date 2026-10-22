@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from hazewatch.fetch_hotspot import fetch_hotspot
+from hazewatch.models import HotspotMetrics
 from hazewatch.process import compute_metrics, process_hotspot
 from hazewatch.storage import load_metrics, load_yesterday_metrics, save_metrics
 
@@ -20,6 +21,10 @@ if __name__ == "__main__":
     yesterday_metrics = load_yesterday_metrics()
     
     metrics = compute_metrics(df, yesterday_metrics)
+    
+    validated_metrics = HotspotMetrics(**metrics)
+    
+    metrics = validated_metrics.model_dump()
     
     
     print("\nMetrics: ")
