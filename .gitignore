@@ -88,3 +88,7 @@ target/
 
 # Virtual environment
 .venv/
+
+# Borneo HazeWatch runtime data
+data/metrics/
+data/reports/
