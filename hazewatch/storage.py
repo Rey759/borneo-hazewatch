@@ -3,8 +3,12 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 DATA_DIR = Path("data/metrics")
+REPORT_DIR = Path("data/reports")
 
-def save_metrics(metrics: dict, target_date: date | None = None)-> Path:
+def save_metrics(
+    metrics: dict,
+    target_date: date | None = None,
+    )-> Path:
     """ Save daily metrics to a JSON file """
     
     if target_date is None:
@@ -38,3 +42,21 @@ def load_yesterday_metrics()-> dict | None:
     yesterday = datetime.now(UTC).date() - timedelta(days=1)
     
     return load_metrics(yesterday)
+
+def save_report(
+    report: str,
+    target_date: date | None = None,
+)-> Path:
+    """Save daily hotspot report to a JSON file """
+    
+    if target_date is None:
+        target_date = datetime.now(UTC).date()
+        
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    
+    file_path = REPORT_DIR / f"{target_date.isoformat()}.txt"
+    
+    with file_path.open("w", encoding="utf=8") as file:
+        file.write(report)
+        
+    return file_path
