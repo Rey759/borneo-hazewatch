@@ -1,0 +1,46 @@
+name: Daily Hotspot Monitoring
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run hotspot monitoring
+        env:
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
+        run: python -m hazewatch.main
+          
+      - name: Upload monitoring results
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hazewatch-daily-${{ github.run_id }}
+          path: |
+            data/metrics/
+            data/reports/
+          if-no-file-found: error
+          retention-days: 30
