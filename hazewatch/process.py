@@ -1,3 +1,5 @@
+from datetime import date
+
 import pandas as pd
 
 
@@ -29,9 +31,30 @@ def process_hotspot(df: pd.DataFrame) -> pd.DataFrame:
         & df["longitude"].between(110.732674, 115.847221)
     ]
     
+    if "acq_date" in df.columns:
+        df["acq_date"] = pd.to_datetime(
+            df["acq_date"],
+            errors="coerce",
+        ).dt.date
+    
     df = df.reset_index(drop=True)
     
     return df
+
+
+def filter_hotspot_by_date(
+    df: pd.DataFrame,
+    target_date,
+)-> pd.DataFrame:
+    """ Keep only hotspots detected on the specified date"""
+    if "acq_date" not in df.columns:
+        raise ValueError("Kolom 'acq_date' tidak ditemukan")
+    
+    target_date = pd.Timestamp(target_date).date()
+    
+    return df.loc[
+        df["acq_date"] == target_date
+    ].reset_index(drop=True)
 
 def compute_metrics(
     df: pd.DataFrame,
@@ -80,4 +103,18 @@ def compute_metrics(
         "trend": trend,
     }
 
+def is_valid_comparison_metrics(
+    metrics: dict | None,
+    expected_date: date,
+    source: str,
+) -> bool:
+    """ Check whether previous metrics are suitable for daily comparison """
+    if metrics is None:
+        return False
     
+    return (
+        metrics.get("observation_date") == expected_date.isoformat()
+        and metrics.get("period_days") == 1
+        and metrics.get("source") == source
+        and metrics.get("total") is not None
+    )

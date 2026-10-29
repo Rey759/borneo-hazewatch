@@ -1,6 +1,12 @@
+from datetime import date
+
 import pandas as pd
 
-from hazewatch.process import compute_metrics, process_hotspot
+from hazewatch.process import (
+    compute_metrics,
+    is_valid_comparison_metrics,
+    process_hotspot,
+)
 
 
 def test_compute_metrics():
@@ -113,3 +119,88 @@ def test_compute_metrics_yesterday_without_total():
     
     assert result["total"] == 4
     assert result["trend"] is None
+    
+
+def test_valid_comparison_metrics():
+    metrics = {
+        "total": 250,
+        "observation_date": "2026-10-28",
+        "period_days": 1,
+        "source": "VIIRS_SNPP_NRT",
+    }
+    
+    result = is_valid_comparison_metrics(
+        metrics,
+        expected_date=date(2026, 10, 28),
+        source="VIIRS_SNPP_NRT",
+    )
+    
+    assert result is True
+
+    
+def test_invalid_comparison_metrics_without_metadata():
+    # Data lama berupa agregasi 5 hari tidak layak
+    # Dibandingkan dengan data harian
+    metrics = {
+        "total": 1454,
+        "high_confidence": 25,
+    }
+    
+    result = is_valid_comparison_metrics(
+        metrics,
+        expected_date=date(2026, 10, 28),
+        source="VIIRS_SNPP_NRT",
+    )
+    
+    assert result is False
+
+    
+def test_invalid_comparison_metrics_wrong_date():
+    metrics = {
+        "total": 250,
+        "observation_date": "2026-10-27",
+        "period_days": 1,
+        "source": "VIIRS_SNPP_NRT",
+    }
+    
+    result = is_valid_comparison_metrics(
+        metrics,
+        expected_date=date(2026, 10, 28),
+        source="VIIRS_SNPP_NRT",
+    )
+    
+    assert result is False
+
+
+def test_invalid_comparison_metrics_wrong_period():
+    metrics = {
+        "total": 1454,
+        "observation_date": "2026-10-28",
+        "period_days": 5,
+        "source": "VIIRS_SNPP_NRT",
+    }
+    
+    result = is_valid_comparison_metrics(
+        metrics,
+        expected_date=date(2026, 10, 28),
+        source="VIIRS_SNPP_NRT",
+    )
+    
+    assert result is False
+
+
+def test_invalid_comparison_metrics_wrong_source():
+    metrics = {
+        "total": 250,
+        "observation_date": "2026-10-28",
+        "period_days": 1,
+        "source": "VIIRS_NOAA20_NRT",
+    }
+    
+    result = is_valid_comparison_metrics(
+        metrics,
+        expected_date=date(2026, 10, 28),
+        source="VIIRS_SNPP_NRT",
+    )
+    
+    assert result is False
